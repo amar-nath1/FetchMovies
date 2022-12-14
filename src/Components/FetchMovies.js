@@ -3,11 +3,13 @@ import { Button, Card } from "react-bootstrap"
 import Movies from "./Movies"
 
 
-const FetchMovies=()=>{
+const FetchMovies=(props)=>{
 
     const [movies,setMovies]=useState([])
 
      async function fetchClickHandler(){
+
+        props.loaderHandler(true)
 
             let response=await fetch('https://swapi.dev/api/films')
 
@@ -22,7 +24,8 @@ const FetchMovies=()=>{
             }
         })
 
-        setMovies(myMovieArr)         
+        setMovies(myMovieArr)
+        props.loaderHandler(false)         
         }
 
 
