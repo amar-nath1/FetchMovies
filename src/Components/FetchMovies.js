@@ -7,25 +7,24 @@ const FetchMovies=()=>{
 
     const [movies,setMovies]=useState([])
 
-    const fetchClickHandler=()=>{
+     async function fetchClickHandler(){
 
-        fetch('https://swapi.dev/api/films').then((response)=>{
+            let response=await fetch('https://swapi.dev/api/films')
 
-            return response.json()
-        }).then((data)=>{
+            let data=await response.json()
 
-            const myMovieArr=data.results.map((movie)=>{
-                return {
-                    id:movie.episode_id,
-                    title:movie.title,
-                    openingText:movie.opening_crawl,
-                    releaseDate:movie.release_date
-                }
-            })
-
-            setMovies(myMovieArr)
+        const myMovieArr=data.results.map((movie)=>{
+            return {
+                id:movie.episode_id,
+                title:movie.title,
+                openingText:movie.opening_crawl,
+                releaseDate:movie.release_date
+            }
         })
-    }
+
+        setMovies(myMovieArr)         
+        }
+
 
     return (
         <>
