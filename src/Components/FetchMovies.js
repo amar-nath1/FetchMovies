@@ -1,32 +1,50 @@
-import { useState } from "react"
+import { useState,useEffect, useCallback } from "react"
 import { Button, Card } from "react-bootstrap"
+import Loader from "./Loader"
 import Movies from "./Movies"
 
 
-const FetchMovies=(props)=>{
+const FetchMovies=()=>{
 
     const [movies,setMovies]=useState([])
+    const [isLoading,setIsLoading]=useState(false)
+    const [error,setError]=useState(null)
 
-     async function fetchClickHandler(){
+    
 
-        props.loaderHandler(true)
+     const fetchClickHandler=useCallback(async ()=>{
+        setIsLoading(true)
+        setError(null)
+    
+try {
 
-            let response=await fetch('https://swapi.dev/api/films')
+    let response=await fetch('https://swapi.dev/api/films')
 
-            let data=await response.json()
+    if (!response.ok){
+        throw new Error('Something Went Wrong  ....Retrying')
+    }
 
-        const myMovieArr=data.results.map((movie)=>{
-            return {
-                id:movie.episode_id,
-                title:movie.title,
-                openingText:movie.opening_crawl,
-                releaseDate:movie.release_date
-            }
-        })
+    let data=await response.json()
 
-        setMovies(myMovieArr)
-        props.loaderHandler(false)         
-        }
+const myMovieArr=data.results.map((movie)=>{
+    return {
+        id:movie.episode_id,
+        title:movie.title,
+        openingText:movie.opening_crawl,
+        releaseDate:movie.release_date
+    }
+})
+
+setMovies(myMovieArr)
+
+} catch(error){
+    setError(error.message)
+}
+        setIsLoading(false)  
+
+        },[])
+
+        useEffect(()=>{fetchClickHandler()},[fetchClickHandler])
 
 
     return (
@@ -38,7 +56,11 @@ const FetchMovies=(props)=>{
             </Card.Body>
             
         </Card>
-        <Movies movies={movies}></Movies>
+        {isLoading && <Loader></Loader>}
+        {!isLoading && movies.length>0 && <Movies movies={movies}></Movies>}
+        {!isLoading && movies.length==0 && !error && <p>No Movies Found</p>}
+        {!isLoading && error && <p>{error}</p>}
+        {/* <Button>Cancel Retry</Button> */}
         </>
 
     )
