@@ -5,7 +5,7 @@ const Movies=(props)=>{
 
     const movies = props.movies.map((movie)=>{
 
-        return <Card style={{width:'30rem',marginLeft:'400px'}}>
+        return <Card key={movie.id} style={{width:'30rem',marginLeft:'400px'}}>
         <Card.Body>
 
         <Card.Title>Title - {movie.title}</Card.Title>

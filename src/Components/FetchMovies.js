@@ -1,66 +1,77 @@
-import { useState,useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button, Card } from "react-bootstrap"
+import AddMovieForm from "./AddMovieForm"
 import Loader from "./Loader"
 import Movies from "./Movies"
 
 
-const FetchMovies=()=>{
+const FetchMovies = () => {
 
-    const [movies,setMovies]=useState([])
-    const [isLoading,setIsLoading]=useState(false)
-    const [error,setError]=useState(null)
+    console.log('fetch movie rendered')
 
-    
+    const [movies, setMovies] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState(null)
 
-     const fetchClickHandler=useCallback(async ()=>{
-        setIsLoading(true)
+
+
+    const fetchClickHandler = useCallback(async () => {
+        
+            setIsLoading(true)
+
         setError(null)
-    
-try {
 
-    let response=await fetch('https://swapi.dev/api/films')
+       
 
-    if (!response.ok){
-        throw new Error('Something Went Wrong  ....Retrying')
-    }
+        try {
 
-    let data=await response.json()
+            let response = await fetch('https://swapi.dev/api/films')
 
-const myMovieArr=data.results.map((movie)=>{
-    return {
-        id:movie.episode_id,
-        title:movie.title,
-        openingText:movie.opening_crawl,
-        releaseDate:movie.release_date
-    }
-})
+            if (!response.ok) {
+                throw new Error('Something Went Wrong  ....Retrying')
+            }
 
-setMovies(myMovieArr)
+        
 
-} catch(error){
-    setError(error.message)
-}
-        setIsLoading(false)  
+            let data = await response.json()
 
-        },[])
+            const myMovieArr = data.results.map((movie) => {
+                return {
+                    id: movie.episode_id,
+                    title: movie.title,
+                    openingText: movie.opening_crawl,
+                    releaseDate: movie.release_date
+                }
+            })
 
-        useEffect(()=>{fetchClickHandler()},[fetchClickHandler])
+            setMovies(myMovieArr)
+
+        } catch (error) {
+            setError(error.message)
+        }
+        setIsLoading(false)
+
+    }, [])
+
+    useEffect(() => { fetchClickHandler() }, [fetchClickHandler])
 
 
     return (
         <>
-        <Card style={{width:'18rem',marginLeft:'400px'}}>
-            <Card.Body>
 
-            <Button onClick={fetchClickHandler}>Fetch Movies</Button>
-            </Card.Body>
-            
-        </Card>
-        {isLoading && <Loader></Loader>}
-        {!isLoading && movies.length>0 && <Movies movies={movies}></Movies>}
-        {!isLoading && movies.length==0 && !error && <p>No Movies Found</p>}
-        {!isLoading && error && <p>{error}</p>}
-        {/* <Button>Cancel Retry</Button> */}
+            <AddMovieForm></AddMovieForm>
+            <Card style={{ width: '18rem', marginLeft: '400px' }}>
+                <Card.Body>
+
+                    <Button onClick={fetchClickHandler}>Fetch Movies</Button>
+                </Card.Body>
+
+            </Card>
+            {isLoading && <Loader></Loader>}
+            {!isLoading && movies.length > 0 && <Movies movies={movies}></Movies>}
+            {!isLoading && movies.length == 0 && !error && <p>No Movies Found</p>}
+            {!isLoading && error && <p>{error}</p>}
+            {/* <Button>Cancel Retry</Button> */}
         </>
 
     )
