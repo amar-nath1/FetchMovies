@@ -7,8 +7,6 @@ import Movies from "./Movies"
 
 const FetchMovies = () => {
 
-    console.log('fetch movie rendered')
-
     const [movies, setMovies] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
@@ -25,7 +23,7 @@ const FetchMovies = () => {
 
         try {
 
-            let response = await fetch('https://swapi.dev/api/films')
+            let response = await fetch('https://react-post-amar-default-rtdb.firebaseio.com/movies.json')
 
             if (!response.ok) {
                 throw new Error('Something Went Wrong  ....Retrying')
@@ -34,15 +32,19 @@ const FetchMovies = () => {
         
 
             let data = await response.json()
+            
 
-            const myMovieArr = data.results.map((movie) => {
-                return {
-                    id: movie.episode_id,
-                    title: movie.title,
-                    openingText: movie.opening_crawl,
-                    releaseDate: movie.release_date
-                }
-            })
+            const myMovieArr = []
+
+            for (const key in data){
+                myMovieArr.push({
+                    id:key,
+                    title:data[key].title,
+                    openingText:data[key].openingText,
+                    releaseDate:data[key].releaseDate
+                })
+            }
+                
 
             setMovies(myMovieArr)
 
@@ -59,16 +61,16 @@ const FetchMovies = () => {
     return (
         <>
 
-            <AddMovieForm></AddMovieForm>
-            <Card style={{ width: '18rem', marginLeft: '400px' }}>
+            <AddMovieForm handleFetch={fetchClickHandler}></AddMovieForm>
+            <Card className='border-warning mb-2' style={{ width: '50rem', marginLeft: '200px' }}>
                 <Card.Body>
 
-                    <Button onClick={fetchClickHandler}>Fetch Movies</Button>
+                    <Button variant='secondary' onClick={fetchClickHandler}>Fetch Movies</Button>
                 </Card.Body>
 
             </Card>
             {isLoading && <Loader></Loader>}
-            {!isLoading && movies.length > 0 && <Movies movies={movies}></Movies>}
+            {!isLoading && movies.length > 0 && <Movies handleFetch={fetchClickHandler} movies={movies}></Movies>}
             {!isLoading && movies.length == 0 && !error && <p>No Movies Found</p>}
             {!isLoading && error && <p>{error}</p>}
             {/* <Button>Cancel Retry</Button> */}
